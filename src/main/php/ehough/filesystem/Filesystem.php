@@ -18,7 +18,7 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class ehough_filesystem_Filesystem
+class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterface
 {
     /**
      * Get the absolute path of a temporary directory, preferably the system directory.
