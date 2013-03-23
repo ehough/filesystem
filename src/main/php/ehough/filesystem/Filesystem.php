@@ -153,8 +153,6 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
                     $this->remove(new FilesystemIterator($file));
                 }
 
-
-
                 if (true !== @rmdir($file)) {
                     throw new ehough_filesystem_exception_IOException(sprintf('Failed to remove directory %s', $file));
                 }
@@ -187,7 +185,16 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chmod(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $mode, $umask, true);
+
+                if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+
+                    $this->chmod(new FilesystemIterator($file), $mode, $umask, true);
+
+                } else {
+
+                    $this->chmod(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $mode, $umask, true);
+                }
+
             }
             if (true !== @chmod($file, $mode & ~$umask)) {
                 throw new ehough_filesystem_exception_IOException(sprintf('Failed to chmod file %s', $file));
@@ -208,7 +215,17 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chown(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $user, true);
+
+                if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+
+                    $this->chown(new FilesystemIterator($file), $user, true);
+
+                } else {
+
+                    $this->chown(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $user, true);
+                }
+
+
             }
             if (is_link($file) && function_exists('lchown')) {
                 if (true !== @lchown($file, $user)) {
@@ -235,7 +252,16 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chgrp(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $group, true);
+
+                if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+
+                    $this->chgrp(new FilesystemIterator($file), $group, true);
+
+                } else {
+
+                    $this->chgrp(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $group, true);
+                }
+
             }
             if (is_link($file) && function_exists('lchgrp')) {
                 if (true !== @lchgrp($file, $group)) {
@@ -374,7 +400,17 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         if ($this->exists($targetDir) && isset($options['delete']) && $options['delete']) {
             $deleteIterator = $iterator;
             if (null === $deleteIterator) {
-                $deleteIterator = new RecursiveIteratorIterator(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($targetDir), RecursiveIteratorIterator::CHILD_FIRST);
+
+                if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+
+                    $deleteIterator = new RecursiveIteratorIterator(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($targetDir), RecursiveIteratorIterator::CHILD_FIRST);
+
+                } else {
+
+                    $flags = FilesystemIterator::SKIP_DOTS;
+                    $deleteIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($targetDir, $flags), RecursiveIteratorIterator::CHILD_FIRST);
+                }
+
             }
             foreach ($deleteIterator as $file) {
                 $origin = str_replace($targetDir, $originDir, $file->getPathname());
@@ -390,7 +426,18 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         }
 
         if (null === $iterator) {
-            $iterator = new RecursiveIteratorIterator(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($originDir), RecursiveIteratorIterator::SELF_FIRST);
+
+            if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+
+                $flags = $copyOnWindows ? FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS : FilesystemIterator::SKIP_DOTS;
+                $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($originDir, $flags), RecursiveIteratorIterator::SELF_FIRST);
+
+            } else {
+
+                $iterator = new RecursiveIteratorIterator(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($originDir), RecursiveIteratorIterator::SELF_FIRST);
+            }
+
+
         }
 
         foreach ($iterator as $file) {
