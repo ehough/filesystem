@@ -143,7 +143,17 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
             }
 
             if (is_dir($file) && !is_link($file)) {
-                $this->remove(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file));
+
+                if (version_compare(PHP_VERSION, '5.3.0') < 0) {
+
+                    $this->remove(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file));
+
+                } else {
+
+                    $this->remove(new FilesystemIterator($file));
+                }
+
+
 
                 if (true !== @rmdir($file)) {
                     throw new ehough_filesystem_exception_IOException(sprintf('Failed to remove directory %s', $file));
