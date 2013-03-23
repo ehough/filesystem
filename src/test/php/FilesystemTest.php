@@ -24,7 +24,7 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
     private $workspace = null;
 
     /**
-     * @var \Symfony\Component\Filesystem\Filesystem $filesystem
+     * @var ehough_filesystem_Filesystem $filesystem
      */
     private $filesystem = null;
 

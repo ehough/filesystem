@@ -21,6 +21,21 @@
 class ehough_filesystem_Filesystem
 {
     /**
+     * Get the absolute path of a temporary directory, preferably the system directory.
+     *
+     * @return string The absolute path of a temporary directory, preferably the system directory.
+     */
+    public final function getSystemTempDirectory()
+    {
+        if (function_exists('sys_get_temp_dir')) {
+
+            return realpath(sys_get_temp_dir());
+        }
+
+        return $this->getSimulatedSystemTempDirectory();
+    }
+
+    /**
      * Copies a file.
      *
      * This method only copies the file if the origin file is newer than the target file.
@@ -128,7 +143,7 @@ class ehough_filesystem_Filesystem
             }
 
             if (is_dir($file) && !is_link($file)) {
-                $this->remove(new FilesystemIterator($file));
+                $this->remove(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file));
 
                 if (true !== @rmdir($file)) {
                     throw new ehough_filesystem_exception_IOException(sprintf('Failed to remove directory %s', $file));
@@ -162,7 +177,7 @@ class ehough_filesystem_Filesystem
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chmod(new FilesystemIterator($file), $mode, $umask, true);
+                $this->chmod(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $mode, $umask, true);
             }
             if (true !== @chmod($file, $mode & ~$umask)) {
                 throw new ehough_filesystem_exception_IOException(sprintf('Failed to chmod file %s', $file));
@@ -183,7 +198,7 @@ class ehough_filesystem_Filesystem
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chown(new FilesystemIterator($file), $user, true);
+                $this->chown(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $user, true);
             }
             if (is_link($file) && function_exists('lchown')) {
                 if (true !== @lchown($file, $user)) {
@@ -210,7 +225,7 @@ class ehough_filesystem_Filesystem
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chgrp(new FilesystemIterator($file), $group, true);
+                $this->chgrp(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file), $group, true);
             }
             if (is_link($file) && function_exists('lchgrp')) {
                 if (true !== @lchgrp($file, $group)) {
@@ -349,8 +364,7 @@ class ehough_filesystem_Filesystem
         if ($this->exists($targetDir) && isset($options['delete']) && $options['delete']) {
             $deleteIterator = $iterator;
             if (null === $deleteIterator) {
-                $flags = FilesystemIterator::SKIP_DOTS;
-                $deleteIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($targetDir, $flags), RecursiveIteratorIterator::CHILD_FIRST);
+                $deleteIterator = new RecursiveIteratorIterator(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($targetDir), RecursiveIteratorIterator::CHILD_FIRST);
             }
             foreach ($deleteIterator as $file) {
                 $origin = str_replace($targetDir, $originDir, $file->getPathname());
@@ -366,8 +380,7 @@ class ehough_filesystem_Filesystem
         }
 
         if (null === $iterator) {
-            $flags = $copyOnWindows ? FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS : FilesystemIterator::SKIP_DOTS;
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($originDir, $flags), RecursiveIteratorIterator::SELF_FIRST);
+            $iterator = new RecursiveIteratorIterator(new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($originDir), RecursiveIteratorIterator::SELF_FIRST);
         }
 
         foreach ($iterator as $file) {
@@ -415,6 +428,70 @@ class ehough_filesystem_Filesystem
         }
 
         return false;
+    }
+
+    /**
+     * This function should not be used externally, outside of testing.
+     *
+     * @return string The absolute path of a temporary directory, preferably the system directory.
+     */
+    public final function getSimulatedSystemTempDirectory()
+    {
+        $fromEnv = $this->_getFromEnvPaths(
+            array(
+                'TMP',
+                'TEMP',
+                'TMPDIR',
+            )
+        );
+
+        if ($fromEnv !== null) {
+
+            return $fromEnv;
+        }
+
+        $tempfile = tempnam(
+            md5(
+                uniqid(
+                    rand(),
+                    true
+                )
+            ),
+            ''
+        );
+
+        if (is_file($tempfile)) {
+
+            $tempdir = realpath(dirname($tempfile));
+
+            unlink($tempfile);
+
+            return realpath($tempdir);
+        }
+
+        return false;
+    }
+
+    /**
+     * Try to fetch a temp path from environment variables.
+     *
+     * @param array $envKeys The environment variable names to check.
+     *
+     * @return null|string The first path found, null if none found.
+     */
+    private function _getFromEnvPaths(array $envKeys)
+    {
+        foreach ($envKeys as $key) {
+
+            $value = getenv($key);
+
+            if (! empty($value)) {
+
+                return realpath($value);
+            }
+        }
+
+        return null;
     }
 
     /**
