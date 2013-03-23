@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Filesystem\Exception;
+//namespace Symfony\Component\Filesystem\Exception;
 
 /**
  * Exception class thrown when a filesystem operation failure happens
@@ -18,7 +18,7 @@ namespace Symfony\Component\Filesystem\Exception;
  *
  * @api
  */
-class IOException extends \RuntimeException implements ExceptionInterface
+class ehough_filesystem_exception_IOException extends RuntimeException implements ehough_filesystem_exception_ExceptionInterface
 {
 
 }

@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Filesystem\Exception;
+//namespace Symfony\Component\Filesystem\Exception;
 
 /**
  * Exception interface for all exceptions thrown by the component.
@@ -18,7 +18,7 @@ namespace Symfony\Component\Filesystem\Exception;
  *
  * @api
  */
-interface ExceptionInterface
+interface ehough_filesystem_exception_ExceptionInterface
 {
 
 }

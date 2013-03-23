@@ -9,16 +9,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Symfony\Component\Filesystem;
+//namespace Symfony\Component\Filesystem;
 
-use Symfony\Component\Filesystem\Exception\IOException;
+//use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Provides basic utility to manipulate the file system.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Filesystem
+class ehough_filesystem_Filesystem
 {
     /**
      * Copies a file.
@@ -31,7 +31,7 @@ class Filesystem
      * @param string  $targetFile The target filename
      * @param boolean $override   Whether to override an existing file or not
      *
-     * @throws IOException When copy fails
+     * @throws ehough_filesystem_exception_IOException When copy fails
      */
     public function copy($originFile, $targetFile, $override = false)
     {
@@ -45,7 +45,7 @@ class Filesystem
 
         if ($doCopy) {
             if (true !== @copy($originFile, $targetFile)) {
-                throw new IOException(sprintf('Failed to copy %s to %s', $originFile, $targetFile));
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy %s to %s', $originFile, $targetFile));
             }
         }
     }
@@ -53,10 +53,10 @@ class Filesystem
     /**
      * Creates a directory recursively.
      *
-     * @param string|array|\Traversable $dirs The directory path
+     * @param string|array|Traversable $dirs The directory path
      * @param integer                   $mode The directory mode
      *
-     * @throws IOException On any directory creation failure
+     * @throws ehough_filesystem_exception_IOException On any directory creation failure
      */
     public function mkdir($dirs, $mode = 0777)
     {
@@ -66,7 +66,7 @@ class Filesystem
             }
 
             if (true !== @mkdir($dir, $mode, true)) {
-                throw new IOException(sprintf('Failed to create %s', $dir));
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to create %s', $dir));
             }
         }
     }
@@ -74,7 +74,7 @@ class Filesystem
     /**
      * Checks the existence of files or directories.
      *
-     * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to check
+     * @param string|array|Traversable $files A filename, an array of files, or a Traversable instance to check
      *
      * @return Boolean true if the file exists, false otherwise
      */
@@ -92,11 +92,11 @@ class Filesystem
     /**
      * Sets access and modification time of file.
      *
-     * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to create
+     * @param string|array|Traversable $files A filename, an array of files, or a Traversable instance to create
      * @param integer                   $time  The touch time as a unix timestamp
      * @param integer                   $atime The access time as a unix timestamp
      *
-     * @throws IOException When touch fails
+     * @throws ehough_filesystem_exception_IOException When touch fails
      */
     public function touch($files, $time = null, $atime = null)
     {
@@ -106,7 +106,7 @@ class Filesystem
 
         foreach ($this->toIterator($files) as $file) {
             if (true !== @touch($file, $time, $atime)) {
-                throw new IOException(sprintf('Failed to touch %s', $file));
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to touch %s', $file));
             }
         }
     }
@@ -114,9 +114,9 @@ class Filesystem
     /**
      * Removes files or directories.
      *
-     * @param string|array|\Traversable $files A filename, an array of files, or a \Traversable instance to remove
+     * @param string|array|Traversable $files A filename, an array of files, or a Traversable instance to remove
      *
-     * @throws IOException When removal fails
+     * @throws ehough_filesystem_exception_IOException When removal fails
      */
     public function remove($files)
     {
@@ -128,20 +128,20 @@ class Filesystem
             }
 
             if (is_dir($file) && !is_link($file)) {
-                $this->remove(new \FilesystemIterator($file));
+                $this->remove(new FilesystemIterator($file));
 
                 if (true !== @rmdir($file)) {
-                    throw new IOException(sprintf('Failed to remove directory %s', $file));
+                    throw new ehough_filesystem_exception_IOException(sprintf('Failed to remove directory %s', $file));
                 }
             } else {
                 // https://bugs.php.net/bug.php?id=52176
                 if (defined('PHP_WINDOWS_VERSION_MAJOR') && is_dir($file)) {
                     if (true !== @rmdir($file)) {
-                        throw new IOException(sprintf('Failed to remove file %s', $file));
+                        throw new ehough_filesystem_exception_IOException(sprintf('Failed to remove file %s', $file));
                     }
                 } else {
                     if (true !== @unlink($file)) {
-                        throw new IOException(sprintf('Failed to remove file %s', $file));
+                        throw new ehough_filesystem_exception_IOException(sprintf('Failed to remove file %s', $file));
                     }
                 }
             }
@@ -151,21 +151,21 @@ class Filesystem
     /**
      * Change mode for an array of files or directories.
      *
-     * @param string|array|\Traversable $files     A filename, an array of files, or a \Traversable instance to change mode
+     * @param string|array|Traversable $files     A filename, an array of files, or a Traversable instance to change mode
      * @param integer                   $mode      The new mode (octal)
      * @param integer                   $umask     The mode mask (octal)
      * @param Boolean                   $recursive Whether change the mod recursively or not
      *
-     * @throws IOException When the change fail
+     * @throws ehough_filesystem_exception_IOException When the change fail
      */
     public function chmod($files, $mode, $umask = 0000, $recursive = false)
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chmod(new \FilesystemIterator($file), $mode, $umask, true);
+                $this->chmod(new FilesystemIterator($file), $mode, $umask, true);
             }
             if (true !== @chmod($file, $mode & ~$umask)) {
-                throw new IOException(sprintf('Failed to chmod file %s', $file));
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to chmod file %s', $file));
             }
         }
     }
@@ -173,25 +173,25 @@ class Filesystem
     /**
      * Change the owner of an array of files or directories
      *
-     * @param string|array|\Traversable $files     A filename, an array of files, or a \Traversable instance to change owner
+     * @param string|array|Traversable $files     A filename, an array of files, or a Traversable instance to change owner
      * @param string                    $user      The new owner user name
      * @param Boolean                   $recursive Whether change the owner recursively or not
      *
-     * @throws IOException When the change fail
+     * @throws ehough_filesystem_exception_IOException When the change fail
      */
     public function chown($files, $user, $recursive = false)
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chown(new \FilesystemIterator($file), $user, true);
+                $this->chown(new FilesystemIterator($file), $user, true);
             }
             if (is_link($file) && function_exists('lchown')) {
                 if (true !== @lchown($file, $user)) {
-                    throw new IOException(sprintf('Failed to chown file %s', $file));
+                    throw new ehough_filesystem_exception_IOException(sprintf('Failed to chown file %s', $file));
                 }
             } else {
                 if (true !== @chown($file, $user)) {
-                    throw new IOException(sprintf('Failed to chown file %s', $file));
+                    throw new ehough_filesystem_exception_IOException(sprintf('Failed to chown file %s', $file));
                 }
             }
         }
@@ -200,25 +200,25 @@ class Filesystem
     /**
      * Change the group of an array of files or directories
      *
-     * @param string|array|\Traversable $files     A filename, an array of files, or a \Traversable instance to change group
+     * @param string|array|Traversable $files     A filename, an array of files, or a Traversable instance to change group
      * @param string                    $group     The group name
      * @param Boolean                   $recursive Whether change the group recursively or not
      *
-     * @throws IOException When the change fail
+     * @throws ehough_filesystem_exception_IOException When the change fail
      */
     public function chgrp($files, $group, $recursive = false)
     {
         foreach ($this->toIterator($files) as $file) {
             if ($recursive && is_dir($file) && !is_link($file)) {
-                $this->chgrp(new \FilesystemIterator($file), $group, true);
+                $this->chgrp(new FilesystemIterator($file), $group, true);
             }
             if (is_link($file) && function_exists('lchgrp')) {
                 if (true !== @lchgrp($file, $group)) {
-                    throw new IOException(sprintf('Failed to chgrp file %s', $file));
+                    throw new ehough_filesystem_exception_IOException(sprintf('Failed to chgrp file %s', $file));
                 }
             } else {
                 if (true !== @chgrp($file, $group)) {
-                    throw new IOException(sprintf('Failed to chgrp file %s', $file));
+                    throw new ehough_filesystem_exception_IOException(sprintf('Failed to chgrp file %s', $file));
                 }
             }
         }
@@ -230,18 +230,18 @@ class Filesystem
      * @param string $origin The origin filename
      * @param string $target The new filename
      *
-     * @throws IOException When target file already exists
-     * @throws IOException When origin cannot be renamed
+     * @throws ehough_filesystem_exception_IOException When target file already exists
+     * @throws ehough_filesystem_exception_IOException When origin cannot be renamed
      */
     public function rename($origin, $target)
     {
         // we check that target does not exist
         if (is_readable($target)) {
-            throw new IOException(sprintf('Cannot rename because the target "%s" already exist.', $target));
+            throw new ehough_filesystem_exception_IOException(sprintf('Cannot rename because the target "%s" already exist.', $target));
         }
 
         if (true !== @rename($origin, $target)) {
-            throw new IOException(sprintf('Cannot rename "%s" to "%s".', $origin, $target));
+            throw new ehough_filesystem_exception_IOException(sprintf('Cannot rename "%s" to "%s".', $origin, $target));
         }
     }
 
@@ -252,7 +252,7 @@ class Filesystem
      * @param string  $targetDir     The symbolic link name
      * @param Boolean $copyOnWindows Whether to copy files if on Windows
      *
-     * @throws IOException When symlink fails
+     * @throws ehough_filesystem_exception_IOException When symlink fails
      */
     public function symlink($originDir, $targetDir, $copyOnWindows = false)
     {
@@ -278,10 +278,10 @@ class Filesystem
                 $report = error_get_last();
                 if (is_array($report)) {
                     if (defined('PHP_WINDOWS_VERSION_MAJOR') && false !== strpos($report['message'], 'error code(1314)')) {
-                        throw new IOException('Unable to create symlink due to error code 1314: \'A required privilege is not held by the client\'. Do you have the required Administrator-rights?');
+                        throw new ehough_filesystem_exception_IOException('Unable to create symlink due to error code 1314: \'A required privilege is not held by the client\'. Do you have the required Administrator-rights?');
                     }
                 }
-                throw new IOException(sprintf('Failed to create symbolic link from %s to %s', $originDir, $targetDir));
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to create symbolic link from %s to %s', $originDir, $targetDir));
             }
         }
     }
@@ -331,16 +331,16 @@ class Filesystem
      *
      * @param string       $originDir The origin directory
      * @param string       $targetDir The target directory
-     * @param \Traversable $iterator  A Traversable instance
+     * @param Traversable $iterator  A Traversable instance
      * @param array        $options   An array of boolean options
      *                               Valid options are:
      *                                 - $options['override'] Whether to override an existing file on copy or not (see copy())
      *                                 - $options['copy_on_windows'] Whether to copy files instead of links on Windows (see symlink())
      *                                 - $options['delete'] Whether to delete files that are not in the source directory (defaults to false)
      *
-     * @throws IOException When file type is unknown
+     * @throws ehough_filesystem_exception_IOException When file type is unknown
      */
-    public function mirror($originDir, $targetDir, \Traversable $iterator = null, $options = array())
+    public function mirror($originDir, $targetDir, Traversable $iterator = null, $options = array())
     {
         $targetDir = rtrim($targetDir, '/\\');
         $originDir = rtrim($originDir, '/\\');
@@ -349,8 +349,8 @@ class Filesystem
         if ($this->exists($targetDir) && isset($options['delete']) && $options['delete']) {
             $deleteIterator = $iterator;
             if (null === $deleteIterator) {
-                $flags = \FilesystemIterator::SKIP_DOTS;
-                $deleteIterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($targetDir, $flags), \RecursiveIteratorIterator::CHILD_FIRST);
+                $flags = FilesystemIterator::SKIP_DOTS;
+                $deleteIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($targetDir, $flags), RecursiveIteratorIterator::CHILD_FIRST);
             }
             foreach ($deleteIterator as $file) {
                 $origin = str_replace($targetDir, $originDir, $file->getPathname());
@@ -366,8 +366,8 @@ class Filesystem
         }
 
         if (null === $iterator) {
-            $flags = $copyOnWindows ? \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS : \FilesystemIterator::SKIP_DOTS;
-            $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($originDir, $flags), \RecursiveIteratorIterator::SELF_FIRST);
+            $flags = $copyOnWindows ? FilesystemIterator::SKIP_DOTS | FilesystemIterator::FOLLOW_SYMLINKS : FilesystemIterator::SKIP_DOTS;
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($originDir, $flags), RecursiveIteratorIterator::SELF_FIRST);
         }
 
         foreach ($iterator as $file) {
@@ -379,7 +379,7 @@ class Filesystem
                 } elseif (is_dir($file)) {
                     $this->mkdir($target);
                 } else {
-                    throw new IOException(sprintf('Unable to guess "%s" file type.', $file));
+                    throw new ehough_filesystem_exception_IOException(sprintf('Unable to guess "%s" file type.', $file));
                 }
             } else {
                 if (is_link($file)) {
@@ -389,7 +389,7 @@ class Filesystem
                 } elseif (is_file($file)) {
                     $this->copy($file, $target, isset($options['override']) ? $options['override'] : false);
                 } else {
-                    throw new IOException(sprintf('Unable to guess "%s" file type.', $file));
+                    throw new ehough_filesystem_exception_IOException(sprintf('Unable to guess "%s" file type.', $file));
                 }
             }
         }
@@ -420,12 +420,12 @@ class Filesystem
     /**
      * @param mixed $files
      *
-     * @return \Traversable
+     * @return Traversable
      */
     private function toIterator($files)
     {
-        if (!$files instanceof \Traversable) {
-            $files = new \ArrayObject(is_array($files) ? $files : array($files));
+        if (!$files instanceof Traversable) {
+            $files = new ArrayObject(is_array($files) ? $files : array($files));
         }
 
         return $files;
