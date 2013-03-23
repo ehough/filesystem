@@ -17,8 +17,6 @@ An examples of class naming conversion:
 ```php
 <?php
 
-use Symfony\Component\Filesystem\Filesystem;
-
 $filesystem = new ehough_filesystem_Filesystem();
 
 $filesystem->copy($originFile, $targetFile, $override = false);
