@@ -64,7 +64,11 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
     private function clean($file)
     {
         if (is_dir($file) && !is_link($file)) {
-            $dir = new \FilesystemIterator($file);
+            if (version_compare(PHP_VERSION, '5.3') < 0) {
+                $dir = new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file);
+            } else {
+                $dir = new FilesystemIterator($file);
+            }
             foreach ($dir as $childFile) {
                 $this->clean($childFile);
             }
@@ -195,7 +199,7 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
     public function testMkdirCreatesDirectoriesFromTraversableObject()
     {
         $basePath = $this->workspace.DIRECTORY_SEPARATOR;
-        $directories = new \ArrayObject(array(
+        $directories = new ArrayObject(array(
             $basePath.'1', $basePath.'2', $basePath.'3'
         ));
 
@@ -255,7 +259,7 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
     public function testTouchCreatesEmptyFilesFromTraversableObject()
     {
         $basePath = $this->workspace.DIRECTORY_SEPARATOR;
-        $files = new \ArrayObject(array(
+        $files = new ArrayObject(array(
             $basePath.'1', $basePath.'2', $basePath.'3'
         ));
 
@@ -303,7 +307,7 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
         mkdir($basePath.'dir');
         touch($basePath.'file');
 
-        $files = new \ArrayObject(array(
+        $files = new ArrayObject(array(
             $basePath.'dir', $basePath.'file'
         ));
 
@@ -363,7 +367,7 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
         mkdir($basePath.'dir');
         touch($basePath.'file');
 
-        $files = new \ArrayObject(array(
+        $files = new ArrayObject(array(
             $basePath.'dir', $basePath.'file'
         ));
 
@@ -378,7 +382,7 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
         touch($basePath.'file');
         touch($basePath.'file2');
 
-        $files = new \ArrayObject(array(
+        $files = new ArrayObject(array(
             $basePath.'dir', $basePath.'file', $basePath.'file2'
         ));
 
@@ -470,7 +474,7 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
 
         $directory = $this->workspace.DIRECTORY_SEPARATOR.'directory';
         $file = $this->workspace.DIRECTORY_SEPARATOR.'file';
-        $files = new \ArrayObject(array($directory, $file));
+        $files = new ArrayObject(array($directory, $file));
 
         mkdir($directory);
         touch($file);
