@@ -115,12 +115,9 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      */
     public function touch($files, $time = null, $atime = null)
     {
-        if (null === $time) {
-            $time = time();
-        }
-
         foreach ($this->toIterator($files) as $file) {
-            if (true !== @touch($file, $time, $atime)) {
+            $touch = $time ? @touch($file, $time, $atime) : @touch($file);
+            if (true !== $touch) {
                 throw new ehough_filesystem_exception_IOException(sprintf('Failed to touch %s', $file));
             }
         }
@@ -369,7 +366,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         $endPathRemainder = implode('/', array_slice($endPathArr, $index));
 
         // Construct $endPath from traversing to the common path, then to the remaining $endPath
-        $relativePath = $traverser . (strlen($endPathRemainder) > 0 ? $endPathRemainder . '/' : '');
+        $relativePath = $traverser.(strlen($endPathRemainder) > 0 ? $endPathRemainder.'/' : '');
 
         return (strlen($relativePath) === 0) ? './' : $relativePath;
     }
@@ -558,5 +555,33 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         }
 
         return $files;
+    }
+
+    /**
+     * Atomically dumps content into a file.
+     *
+     * @param  string  $filename The file to be written to.
+     * @param  string  $content  The data to write into the file.
+     * @param  integer $mode     The file mode (octal).
+     * @throws IOException       If the file cannot be written to.
+     */
+    public function dumpFile($filename, $content, $mode = 0666)
+    {
+        $dir = dirname($filename);
+
+        if (!is_dir($dir)) {
+            $this->mkdir($dir);
+        } elseif (!is_writable($dir)) {
+            throw new ehough_filesystem_exception_IOException(sprintf('Unable to write in the %s directory\n', $dir));
+        }
+
+        $tmpFile = tempnam($dir, basename($filename));
+
+        if (false === @file_put_contents($tmpFile, $content)) {
+            throw new ehough_filesystem_exception_IOException(sprintf('Failed to write file "%s".', $filename));
+        }
+
+        $this->rename($tmpFile, $filename);
+        $this->chmod($filename, $mode);
     }
 }
