@@ -643,6 +643,20 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
         $this->filesystem->rename($file, $newPath);
     }
 
+    public function testRenameOverwritesTheTargetIfItAlreadyExists()
+    {
+        $file = $this->workspace.DIRECTORY_SEPARATOR.'file';
+        $newPath = $this->workspace.DIRECTORY_SEPARATOR.'new_file';
+
+        touch($file);
+        touch($newPath);
+
+        $this->filesystem->rename($file, $newPath, true);
+
+        $this->assertFileNotExists($file);
+        $this->assertFileExists($newPath);
+    }
+
     /**
      * @expectedException ehough_filesystem_exception_IOException
      */
@@ -885,6 +899,28 @@ class ehough_filesystem_FilesystemTest extends PHPUnit_Framework_TestCase
             array('', false),
             array(null, false)
         );
+    }
+
+    public function testDumpFile()
+    {
+        $filename = $this->workspace.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'baz.txt';
+
+        $this->filesystem->dumpFile($filename, 'bar', 0753);
+
+        $this->assertFileExists($filename);
+        $this->assertSame('bar', file_get_contents($filename));
+        $this->assertEquals(753, $this->getFilePermissions($filename));
+    }
+
+    public function testDumpFileOverwritesAnExistingFile()
+    {
+        $filename = $this->workspace.DIRECTORY_SEPARATOR.'foo.txt';
+        file_put_contents($filename, 'FOO BAR');
+
+        $this->filesystem->dumpFile($filename, 'bar');
+
+        $this->assertFileExists($filename);
+        $this->assertSame('bar', file_get_contents($filename));
     }
 
     /**

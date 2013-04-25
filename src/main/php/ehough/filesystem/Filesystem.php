@@ -272,16 +272,17 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
     /**
      * Renames a file.
      *
-     * @param string $origin The origin filename
-     * @param string $target The new filename
+     * @param string  $origin    The origin filename
+     * @param string  $target    The new filename
+     * @param Boolean $overwrite Whether to overwrite the target if it already exists
      *
      * @throws ehough_filesystem_exception_IOException When target file already exists
      * @throws ehough_filesystem_exception_IOException When origin cannot be renamed
      */
-    public function rename($origin, $target)
+    public function rename($origin, $target, $overwrite = false)
     {
         // we check that target does not exist
-        if (is_readable($target)) {
+        if (!$overwrite && is_readable($target)) {
             throw new ehough_filesystem_exception_IOException(sprintf('Cannot rename because the target "%s" already exist.', $target));
         }
 
@@ -581,7 +582,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
             throw new ehough_filesystem_exception_IOException(sprintf('Failed to write file "%s".', $filename));
         }
 
-        $this->rename($tmpFile, $filename);
+        $this->rename($tmpFile, $filename, true);
         $this->chmod($filename, $mode);
     }
 }
