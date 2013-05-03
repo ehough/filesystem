@@ -14,6 +14,9 @@
     "require": {
         "php": ">=5.2"
     },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
     "autoload": {
         "psr-0": {"ehough_filesystem": "src/main/php"}
     }
