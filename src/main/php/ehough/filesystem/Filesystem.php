@@ -50,7 +50,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      */
     public function copy($originFile, $targetFile, $override = false)
     {
-        if (!is_file($originFile)) {
+        if (stream_is_local($originFile) && !is_file($originFile)) {
             throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy %s because file not exists', $originFile));
         }
 
