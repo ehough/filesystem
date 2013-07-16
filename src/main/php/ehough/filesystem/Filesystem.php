@@ -282,13 +282,13 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
     }
 
     /**
-     * Renames a file.
+     * Renames a file or a directory.
      *
-     * @param string  $origin    The origin filename
-     * @param string  $target    The new filename
+     * @param string  $origin    The origin filename or directory
+     * @param string  $target    The new filename or directory
      * @param Boolean $overwrite Whether to overwrite the target if it already exists
      *
-     * @throws ehough_filesystem_exception_IOException When target file already exists
+     * @throws ehough_filesystem_exception_IOException When target file or directory already exists
      * @throws ehough_filesystem_exception_IOException When origin cannot be renamed
      */
     public function rename($origin, $target, $overwrite = false)
@@ -576,7 +576,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      * @param  string  $filename The file to be written to.
      * @param  string  $content  The data to write into the file.
      * @param  integer $mode     The file mode (octal).
-     * @throws IOException       If the file cannot be written to.
+     * @throws ehough_filesystem_exception_IOException       If the file cannot be written to.
      */
     public function dumpFile($filename, $content, $mode = 0666)
     {
