@@ -21,13 +21,13 @@ class ehough_filesystem_FilesystemTestCase extends PHPUnit_Framework_TestCase
     public static function setUpBeforeClass()
     {
         if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
-            static::$symlinkOnWindows = true;
+            self::$symlinkOnWindows = true;
             $originDir = tempnam(sys_get_temp_dir(), 'sl');
             $targetDir = tempnam(sys_get_temp_dir(), 'sl');
             if (true !== @symlink($originDir, $targetDir)) {
                 $report = error_get_last();
                 if (is_array($report) && false !== strpos($report['message'], 'error code(1314)')) {
-                    static::$symlinkOnWindows = false;
+                    self::$symlinkOnWindows = false;
                 }
             }
         }
@@ -102,7 +102,7 @@ class ehough_filesystem_FilesystemTestCase extends PHPUnit_Framework_TestCase
             $this->markTestSkipped('symlink is not supported');
         }
 
-        if (defined('PHP_WINDOWS_VERSION_MAJOR') && false === static::$symlinkOnWindows) {
+        if (defined('PHP_WINDOWS_VERSION_MAJOR') && false === self::$symlinkOnWindows) {
             $this->markTestSkipped('symlink requires "Create symbolic links" privilege on windows');
         }
     }
