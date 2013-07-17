@@ -51,7 +51,11 @@ class ehough_filesystem_FilesystemTestCase extends PHPUnit_Framework_TestCase
     protected function clean($file)
     {
         if (is_dir($file) && !is_link($file)) {
-            $dir = new FilesystemIterator($file);
+            if (version_compare(PHP_VERSION, '5.3') < 0) {
+                $dir = new ehough_filesystem_iterator_SkipDotsRecursiveDirectoryIterator($file);
+            } else {
+                $dir = new FilesystemIterator($file);
+            }
             foreach ($dir as $childFile) {
                 $this->clean($childFile);
             }
