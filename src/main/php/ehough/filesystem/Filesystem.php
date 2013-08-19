@@ -585,7 +585,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         if (!is_dir($dir)) {
             $this->mkdir($dir);
         } elseif (!is_writable($dir)) {
-            throw new ehough_filesystem_exception_IOException(sprintf('Unable to write in the %s directory\n', $dir));
+            throw new ehough_filesystem_exception_IOException(sprintf('Unable to write to the "%s" directory.', $dir));
         }
 
         $tmpFile = tempnam($dir, basename($filename));
