@@ -10,7 +10,7 @@
  */
 
 /**
- * IOException interface for file and input/output stream releated exceptions thrown by the component.
+ * IOException interface for file and input/output stream related exceptions thrown by the component.
  *
  * @author Christian Gärtner <christiangaertner.film@googlemail.com>
  */
