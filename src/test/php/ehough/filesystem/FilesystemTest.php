@@ -858,7 +858,7 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
         $this->assertFileExists($filename);
         $this->assertSame('bar', file_get_contents($filename));
 
-        // skip mode check on windows
+        // skip mode check on Windows
         if (!defined('PHP_WINDOWS_VERSION_MAJOR')) {
             $this->assertFilePermissions(753, $filename);
         }
