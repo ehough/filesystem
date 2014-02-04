@@ -53,7 +53,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
 
         $this->mkdir(dirname($targetFile));
 
-        if (!$override && is_file($targetFile)) {
+        if (!$override && is_file($targetFile) && null === parse_url($originFile, PHP_URL_HOST)) {
             $doCopy = filemtime($originFile) > filemtime($targetFile);
         } else {
             $doCopy = true;
