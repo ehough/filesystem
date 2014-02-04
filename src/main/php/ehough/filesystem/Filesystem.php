@@ -53,7 +53,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
 
         $this->mkdir(dirname($targetFile));
 
-        if (!$override && is_file($targetFile)) {
+        if (!$override && is_file($targetFile) && null === parse_url($originFile, PHP_URL_HOST)) {
             $doCopy = filemtime($originFile) > filemtime($targetFile);
         } else {
             $doCopy = true;
@@ -62,7 +62,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         if ($doCopy) {
             // https://bugs.php.net/bug.php?id=64634
             $source = fopen($originFile, 'r');
-            $target = fopen($targetFile, 'w+');
+            $target = fopen($targetFile, 'w');
             stream_copy_to_stream($source, $target);
             fclose($source);
             fclose($target);
@@ -117,8 +117,8 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      * Sets access and modification time of file.
      *
      * @param string|array|Traversable $files A filename, an array of files, or a Traversable instance to create
-     * @param integer                   $time  The touch time as a unix timestamp
-     * @param integer                   $atime The access time as a unix timestamp
+     * @param integer                  $time  The touch time as a Unix timestamp
+     * @param integer                  $atime The access time as a Unix timestamp
      *
      * @throws ehough_filesystem_exception_IOException When touch fails
      */
@@ -352,7 +352,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      */
     public function makePathRelative($endPath, $startPath)
     {
-        // Normalize separators on windows
+        // Normalize separators on Windows
         if (defined('PHP_WINDOWS_VERSION_MAJOR')) {
             $endPath = strtr($endPath, '\\', '/');
             $startPath = strtr($startPath, '\\', '/');
@@ -456,7 +456,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
                 }
             } else {
                 if (is_link($file)) {
-                    $this->symlink($file, $target);
+                    $this->symlink($file->getLinkTarget(), $target);
                 } elseif (is_dir($file)) {
                     $this->mkdir($target);
                 } elseif (is_file($file)) {
