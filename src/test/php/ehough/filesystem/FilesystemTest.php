@@ -877,6 +877,21 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
         }
     }
 
+    public function testDumpFileWithNullMode()
+    {
+        $filename = $this->workspace.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'baz.txt';
+
+        $this->filesystem->dumpFile($filename, 'bar', null);
+
+        $this->assertFileExists($filename);
+        $this->assertSame('bar', file_get_contents($filename));
+
+        // skip mode check on Windows
+        if (!defined('PHP_WINDOWS_VERSION_MAJOR')) {
+            $this->assertFilePermissions(600, $filename);
+        }
+    }
+
     public function testDumpFileOverwritesAnExistingFile()
     {
         $filename = $this->workspace.DIRECTORY_SEPARATOR.'foo.txt';

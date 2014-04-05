@@ -557,10 +557,11 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
     /**
      * Atomically dumps content into a file.
      *
-     * @param  string  $filename The file to be written to.
-     * @param  string  $content  The data to write into the file.
-     * @param  integer $mode     The file mode (octal).
-     * @throws ehough_filesystem_exception_IOException       If the file cannot be written to.
+     * @param  string       $filename The file to be written to.
+     * @param  string       $content  The data to write into the file.
+     * @param  null|integer $mode     The file mode (octal). If null, file permissions are not modified
+     *                                Deprecated since version 2.3.12, to be removed in 3.0.
+     * @throws ehough_filesystem_exception_IOException            If the file cannot be written to.
      */
     public function dumpFile($filename, $content, $mode = 0666)
     {
@@ -579,7 +580,9 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         }
 
         $this->rename($tmpFile, $filename, true);
-        $this->chmod($filename, $mode);
+        if (null !== $mode) {
+            $this->chmod($filename, $mode);
+        }
     }
 
     /**
