@@ -40,7 +40,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      *
      * @param string  $originFile The original filename
      * @param string  $targetFile The target filename
-     * @param boolean $override   Whether to override an existing file or not
+     * @param bool    $override   Whether to override an existing file or not
      *
      * @throws ehough_filesystem_exception_FileNotFoundException    When originFile doesn't exist
      * @throws ehough_filesystem_exception_IOException              When copy fails
@@ -78,7 +78,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      * Creates a directory recursively.
      *
      * @param string|array|Traversable $dirs The directory path
-     * @param integer                   $mode The directory mode
+     * @param int                      $mode The directory mode
      *
      * @throws ehough_filesystem_exception_IOException On any directory creation failure
      */
@@ -100,7 +100,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      *
      * @param string|array|Traversable $files A filename, an array of files, or a Traversable instance to check
      *
-     * @return Boolean true if the file exists, false otherwise
+     * @return bool    true if the file exists, false otherwise
      */
     public function exists($files)
     {
@@ -117,8 +117,8 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      * Sets access and modification time of file.
      *
      * @param string|array|Traversable $files A filename, an array of files, or a Traversable instance to create
-     * @param integer                  $time  The touch time as a Unix timestamp
-     * @param integer                  $atime The access time as a Unix timestamp
+     * @param int                      $time  The touch time as a Unix timestamp
+     * @param int                      $atime The access time as a Unix timestamp
      *
      * @throws ehough_filesystem_exception_IOException When touch fails
      */
@@ -181,9 +181,9 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      * Change mode for an array of files or directories.
      *
      * @param string|array|Traversable $files     A filename, an array of files, or a Traversable instance to change mode
-     * @param integer                   $mode      The new mode (octal)
-     * @param integer                   $umask     The mode mask (octal)
-     * @param Boolean                   $recursive Whether change the mod recursively or not
+     * @param int                      $mode      The new mode (octal)
+     * @param int                      $umask     The mode mask (octal)
+     * @param bool                     $recursive Whether change the mod recursively or not
      *
      * @throws ehough_filesystem_exception_IOException When the change fail
      */
@@ -212,7 +212,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      *
      * @param string|array|Traversable $files     A filename, an array of files, or a Traversable instance to change owner
      * @param string                    $user      The new owner user name
-     * @param Boolean                   $recursive Whether change the owner recursively or not
+     * @param bool                      $recursive Whether change the owner recursively or not
      *
      * @throws ehough_filesystem_exception_IOException When the change fail
      */
@@ -247,7 +247,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      *
      * @param string|array|Traversable $files     A filename, an array of files, or a Traversable instance to change group
      * @param string                    $group     The group name
-     * @param Boolean                   $recursive Whether change the group recursively or not
+     * @param bool                      $recursive Whether change the group recursively or not
      *
      * @throws ehough_filesystem_exception_IOException When the change fail
      */
@@ -283,7 +283,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      *
      * @param string  $origin    The origin filename or directory
      * @param string  $target    The new filename or directory
-     * @param Boolean $overwrite Whether to overwrite the target if it already exists
+     * @param bool    $overwrite Whether to overwrite the target if it already exists
      *
      * @throws ehough_filesystem_exception_IOException When target file or directory already exists
      * @throws ehough_filesystem_exception_IOException When origin cannot be renamed
@@ -305,7 +305,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      *
      * @param string  $originDir     The origin directory path
      * @param string  $targetDir     The symbolic link name
-     * @param Boolean $copyOnWindows Whether to copy files if on Windows
+     * @param bool    $copyOnWindows Whether to copy files if on Windows
      *
      * @throws ehough_filesystem_exception_IOException When symlink fails
      */
@@ -473,7 +473,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      *
      * @param string $file A file path
      *
-     * @return Boolean
+     * @return bool
      */
     public function isAbsolutePath($file)
     {
@@ -559,7 +559,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      *
      * @param  string       $filename The file to be written to.
      * @param  string       $content  The data to write into the file.
-     * @param  null|integer $mode     The file mode (octal). If null, file permissions are not modified
+     * @param  null|int     $mode     The file mode (octal). If null, file permissions are not modified
      *                                Deprecated since version 2.3.12, to be removed in 3.0.
      * @throws ehough_filesystem_exception_IOException            If the file cannot be written to.
      */
