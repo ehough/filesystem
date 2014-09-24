@@ -62,7 +62,8 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         if ($doCopy) {
             // https://bugs.php.net/bug.php?id=64634
             $source = fopen($originFile, 'r');
-            $target = fopen($targetFile, 'w');
+            // Stream context created to allow files overwrite when using FTP stream wrapper - disabled by default
+            $target = fopen($targetFile, 'w', null, stream_context_create(array('ftp' => array('overwrite' => true))));
             stream_copy_to_stream($source, $target);
             fclose($source);
             fclose($target);
@@ -90,7 +91,14 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
             }
 
             if (true !== @mkdir($dir, $mode, true)) {
-                throw new ehough_filesystem_exception_IOException(sprintf('Failed to create "%s".', $dir), 0, null, $dir);
+                $error = error_get_last();
+                if (!is_dir($dir)) {
+                    // The directory was not created by a concurrent process. Let's throw an exception with a developer friendly error message if we have one
+                    if ($error) {
+                        throw new ehough_filesystem_exception_IOException(sprintf('Failed to create "%s": %s.', $dir, $error['message']), 0, null, $dir);
+                    }
+                    throw new ehough_filesystem_exception_IOException(sprintf('Failed to create "%s"', $dir), 0, null, $dir);
+                }
             }
         }
     }
