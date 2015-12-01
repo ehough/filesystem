@@ -78,8 +78,11 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
                 throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy "%s" to "%s".', $originFile, $targetFile), 0, null, $originFile);
             }
 
-            if (stream_is_local($originFile) && $bytesCopied !== filesize($originFile)) {
-                throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy the whole content of "%s" to "%s %g bytes copied".', $originFile, $targetFile, $bytesCopied), 0, null, $originFile);
+            // Like `cp`, preserve executable permission bits
+            @chmod($targetFile, fileperms($targetFile) | (fileperms($originFile) & 0111));
+
+            if (stream_is_local($originFile) && $bytesCopied !== ($bytesOrigin = filesize($originFile))) {
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy the whole content of "%s" to "%s" (%g of %g bytes copied).', $originFile, $targetFile, $bytesCopied, $bytesOrigin), 0, null, $originFile);
             }
         }
     }
@@ -597,6 +600,10 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
 
         $this->rename($tmpFile, $filename, true);
         if (null !== $mode) {
+            if (func_num_args() > 2) {
+                trigger_error('Support for modifying file permissions is deprecated since version 2.3.12 and will be removed in 3.0.', E_USER_DEPRECATED);
+            }
+
             $this->chmod($filename, $mode);
         }
     }
