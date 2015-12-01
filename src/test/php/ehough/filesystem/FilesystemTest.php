@@ -21,7 +21,7 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
      */
     private $filesystem = null;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->filesystem = new ehough_filesystem_Filesystem();
