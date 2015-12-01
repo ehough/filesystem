@@ -1,15 +1,19 @@
-# filesystem [![Build Status](https://secure.travis-ci.org/ehough/filesystem.png)](http://travis-ci.org/ehough/filesystem)
+## filesystem
+
+[![Build Status](https://secure.travis-ci.org/ehough/filesystem.png)](http://travis-ci.org/ehough/filesystem)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Latest Stable Version](https://poser.pugx.org/ehough/filesystem/v/stable)](https://packagist.org/packages/ehough/filesystem)
+[![License](https://poser.pugx.org/ehough/filesystem/license)](https://packagist.org/packages/ehough/filesystem)
 
 Fork of [Symfony's Filesystem component](https://github.com/symfony/Filesystem) compatible with PHP 5.2+.
 
 ### Motivation
 
 [Symfony's Filesystem component](https://github.com/symfony/Filesystem) is a fantastic filesystem library,
-but it's only compatible with PHP 5.3+. While 97% of PHP servers run PHP 5.2 or higher,
- **32% of all servers are still running PHP 5.2 or lower** ([source](http://w3techs.com/technologies/details/pl-php/5/all)).
-It would be a shame to exempt this library from nearly a third of the world's servers just because of a few version incompatibilities.
+but it's only compatible with PHP 5.3+. While 99% of PHP servers run PHP 5.2 or higher,
+13% of all servers are still running PHP 5.2 or lower ([source](http://w3techs.com/technologies/details/pl-php/5/all)).
 
-Once PHP 5.3+ adoption levels near closer to 100%, this library will be retired.
+**Once PHP 5.3+ adoption levels break 90%, this library will be retired.**
 
 ### Differences from [Symfony's Filesystem component](https://github.com/symfony/EventDispatcher)
 
