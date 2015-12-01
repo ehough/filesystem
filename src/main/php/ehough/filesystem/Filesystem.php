@@ -380,7 +380,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         // Find for which directory the common path stops
         $index = 0;
         while (isset($startPathArr[$index]) && isset($endPathArr[$index]) && $startPathArr[$index] === $endPathArr[$index]) {
-            $index++;
+            ++$index;
         }
 
         // Determine how deep the start path is relative to the common path (ie, "web/bundles" = 2 levels)
