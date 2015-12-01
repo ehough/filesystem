@@ -671,7 +671,7 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
      */
     public function testRenameThrowsExceptionOnError()
     {
-        $file = $this->workspace.DIRECTORY_SEPARATOR.uniqid();
+        $file = $this->workspace.DIRECTORY_SEPARATOR.uniqid('fs_test_', true);
         $newPath = $this->workspace.DIRECTORY_SEPARATOR.'new_file';
 
         $this->filesystem->rename($file, $newPath);
