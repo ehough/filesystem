@@ -53,10 +53,9 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
 
         $this->mkdir(dirname($targetFile));
 
-        if (!$override && is_file($targetFile) && null === parse_url($originFile, PHP_URL_HOST)) {
+        $doCopy = true;
+        if (!$override && null === parse_url($originFile, PHP_URL_HOST) && is_file($targetFile)) {
             $doCopy = filemtime($originFile) > filemtime($targetFile);
-        } else {
-            $doCopy = true;
         }
 
         if ($doCopy) {
@@ -346,16 +345,15 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
             }
         }
 
-        if (!$ok) {
-            if (true !== @symlink($originDir, $targetDir)) {
-                $report = error_get_last();
-                if (is_array($report)) {
-                    if ('\\' === DIRECTORY_SEPARATOR && false !== strpos($report['message'], 'error code(1314)')) {
-                        throw new ehough_filesystem_exception_IOException('Unable to create symlink due to error code 1314: \'A required privilege is not held by the client\'. Do you have the required Administrator-rights?');
-                    }
+        if (!$ok && true !== @symlink($originDir, $targetDir)) {
+            $report = error_get_last();
+            if (is_array($report)) {
+                if ('\\' === DIRECTORY_SEPARATOR && false !== strpos($report['message'], 'error code(1314)')) {
+                    throw new ehough_filesystem_exception_IOException('Unable to create symlink due to error code 1314: \'A required privilege is not held by the client\'. Do you have the required Administrator-rights?');
                 }
                 throw new ehough_filesystem_exception_IOException(sprintf('Failed to create symbolic link from "%s" to "%s".', $originDir, $targetDir), 0, null, $targetDir);
             }
+            throw new ehough_filesystem_exception_IOException(sprintf('Failed to create symbolic link from %s to %s', $originDir, $targetDir));
         }
     }
 
@@ -394,9 +392,9 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         $endPathRemainder = implode('/', array_slice($endPathArr, $index));
 
         // Construct $endPath from traversing to the common path, then to the remaining $endPath
-        $relativePath = $traverser.(strlen($endPathRemainder) > 0 ? $endPathRemainder.'/' : '');
+        $relativePath = $traverser.('' !== $endPathRemainder ? $endPathRemainder.'/' : '');
 
-        return (strlen($relativePath) === 0) ? './' : $relativePath;
+        return '' === $relativePath ? './' : $relativePath;
     }
 
     /**
