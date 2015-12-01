@@ -451,6 +451,10 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
             }
         }
 
+        if ($this->exists($originDir)) {
+            $this->mkdir($targetDir);
+        }
+
         foreach ($iterator as $file) {
             $target = str_replace($originDir, $targetDir, $file->getPathname());
 
