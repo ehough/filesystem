@@ -8,6 +8,9 @@ class ehough_filesystem_LockHandlerTest extends PHPUnit_Framework_TestCase
      */
     public function testConstructWhenRepositoryDoesNotExist()
     {
+        if (!getenv('USER') || 'root' === getenv('USER')) {
+            $this->markTestSkipped('This test will fail if run under superuser');
+        }
         new ehough_filesystem_LockHandler('lock', '/a/b/c/d/e');
     }
 
@@ -17,6 +20,9 @@ class ehough_filesystem_LockHandlerTest extends PHPUnit_Framework_TestCase
      */
     public function testConstructWhenRepositoryIsNotWriteable()
     {
+        if (!getenv('USER') || 'root' === getenv('USER')) {
+            $this->markTestSkipped('This test will fail if run under superuser');
+        }
         new ehough_filesystem_LockHandler('lock', '/');
     }
 

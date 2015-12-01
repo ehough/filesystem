@@ -17,7 +17,7 @@
 interface ehough_filesystem_exception_IOExceptionInterface extends ehough_filesystem_exception_ExceptionInterface
 {
     /**
-     * Returns the associated path for the exception
+     * Returns the associated path for the exception.
      *
      * @return string The path.
      */

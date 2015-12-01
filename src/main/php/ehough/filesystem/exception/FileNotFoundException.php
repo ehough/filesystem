@@ -10,7 +10,7 @@
  */
 
 /**
- * Exception class thrown when a file couldn't be found
+ * Exception class thrown when a file couldn't be found.
  *
  * @author Fabien Potencier <fabien@symfony.com>
  * @author Christian Gärtner <christiangaertner.film@googlemail.com>
