@@ -28,8 +28,9 @@ class ehough_filesystem_LockHandler
     private $handle;
 
     /**
-     * @param  string      $name     The lock name
-     * @param  string|null $lockPath The directory to store the lock. Default values will use temporary directory
+     * @param string      $name     The lock name
+     * @param string|null $lockPath The directory to store the lock. Default values will use temporary directory
+     *
      * @throws ehough_filesystem_exception_IOException If the lock directory could not be created or is not writable
      */
     public function __construct($name, $lockPath = null)
@@ -49,10 +50,12 @@ class ehough_filesystem_LockHandler
     }
 
     /**
-     * Lock the resource
+     * Lock the resource.
      *
-     * @param  bool        $blocking wait until the lock is released
-     * @return bool        Returns true if the lock was acquired, false otherwise
+     * @param bool $blocking wait until the lock is released
+     *
+     * @return bool Returns true if the lock was acquired, false otherwise
+     *
      * @throws ehough_filesystem_exception_IOException If the lock file could not be created or opened
      */
     public function lock($blocking = false)
@@ -94,7 +97,7 @@ class ehough_filesystem_LockHandler
     }
 
     /**
-     * Release the resource
+     * Release the resource.
      */
     public function release()
     {

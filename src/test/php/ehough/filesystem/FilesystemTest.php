@@ -16,17 +16,6 @@ require_once 'FilesystemTestCase.php';
  */
 class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestCase
 {
-    /**
-     * @var ehough_filesystem_Filesystem
-     */
-    private $filesystem = null;
-
-    protected function setUp()
-    {
-        parent::setUp();
-        $this->filesystem = new ehough_filesystem_Filesystem();
-    }
-
     public function testCopyCreatesNewFile()
     {
         $sourceFilePath = $this->workspace.DIRECTORY_SEPARATOR.'copy_source_file';
@@ -679,7 +668,9 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
 
     public function testSymlink()
     {
-        $this->markAsSkippedIfSymlinkIsMissing();
+        if ('\\' === DIRECTORY_SEPARATOR) {
+            $this->markTestSkipped('Windows does not support creating "broken" symlinks');
+        }
 
         $file = $this->workspace.DIRECTORY_SEPARATOR.'file';
         $link = $this->workspace.DIRECTORY_SEPARATOR.'link';
@@ -1009,6 +1000,8 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
 
     public function testCopyShouldKeepExecutionPermission()
     {
+        $this->markAsSkippedIfChmodIsMissing();
+
         $sourceFilePath = $this->workspace.DIRECTORY_SEPARATOR.'copy_source_file';
         $targetFilePath = $this->workspace.DIRECTORY_SEPARATOR.'copy_target_file';
 
