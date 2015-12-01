@@ -946,6 +946,115 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
         );
     }
 
+    public function testTempnam()
+    {
+        $dirname = $this->workspace;
+
+        $filename = $this->filesystem->tempnam($dirname, 'foo');
+
+        $this->assertFileExists($filename);
+    }
+
+    public function testTempnamWithFileScheme()
+    {
+        $scheme = 'file://';
+        $dirname = $scheme.$this->workspace;
+
+        $filename = $this->filesystem->tempnam($dirname, 'foo');
+
+        $this->assertStringStartsWith($scheme, $filename);
+        $this->assertFileExists($filename);
+    }
+
+    public function testTempnamWithMockScheme()
+    {
+        if (!class_exists('ehough_filesystem_fixtures_MockStream', false)) {
+
+            require dirname(__FILE__) . '/fixtures/MockStream.php';
+        }
+
+        stream_wrapper_register('mock', 'ehough_filesystem_fixtures_MockStream');
+
+        $scheme = 'mock://';
+        $dirname = $scheme.$this->workspace;
+
+        $filename = $this->filesystem->tempnam($dirname, 'foo');
+
+        $this->assertStringStartsWith($scheme, $filename);
+        $this->assertFileExists($filename);
+    }
+
+    /**
+     * @expectedException ehough_filesystem_exception_IOException
+     */
+    public function testTempnamWithZlibSchemeFails()
+    {
+        $scheme = 'compress.zlib://';
+        $dirname = $scheme.$this->workspace;
+
+        // The compress.zlib:// stream does not support mode x: creates the file, errors "failed to open stream: operation failed" and returns false
+        $this->filesystem->tempnam($dirname, 'bar');
+
+    }
+
+    public function testTempnamWithPHPTempSchemeFails()
+    {
+        $scheme = 'php://temp';
+        $dirname = $scheme;
+
+        $filename = $this->filesystem->tempnam($dirname, 'bar');
+
+        $this->assertStringStartsWith($scheme, $filename);
+
+        // The php://temp stream deletes the file after close
+        $this->assertFileNotExists($filename);
+    }
+
+    /**
+     * @expectedException ehough_filesystem_exception_IOException
+     */
+    public function testTempnamWithPharSchemeFails()
+    {
+        // Skip test if Phar disabled phar.readonly must be 0 in php.ini
+        if (!class_exists('Phar') || !Phar::canWrite()) {
+            $this->markTestSkipped('This test cannot run when phar.readonly is 1.');
+        }
+
+        $scheme = 'phar://';
+        $dirname = $scheme.$this->workspace;
+        $pharname = 'foo.phar';
+
+        new Phar($this->workspace.'/'.$pharname, 0, $pharname);
+        // The phar:// stream does not support mode x: fails to create file, errors "failed to open stream: phar error: "$filename" is not a file in phar "$pharname"" and returns false
+        $this->filesystem->tempnam($dirname, $pharname.'/bar');
+    }
+
+    /**
+     * @expectedException ehough_filesystem_exception_IOException
+     */
+    public function testTempnamWithHTTPSchemeFails()
+    {
+        $scheme = 'http://';
+        $dirname = $scheme.$this->workspace;
+
+        // The http:// scheme is read-only
+        $this->filesystem->tempnam($dirname, 'bar');
+    }
+
+    public function testTempnamOnUnwritableFallsBackToSysTmp()
+    {
+        $scheme = 'file://';
+        $dirname = $scheme.$this->workspace.DIRECTORY_SEPARATOR.'does_not_exist';
+
+        $filename = $this->filesystem->tempnam($dirname, 'bar');
+        $realTempDir = realpath(sys_get_temp_dir());
+        $this->assertStringStartsWith(rtrim($scheme.$realTempDir, DIRECTORY_SEPARATOR), $filename);
+        $this->assertFileExists($filename);
+
+        // Tear down
+        @unlink($filename);
+    }
+
     public function testDumpFile()
     {
         $filename = $this->workspace.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'baz.txt';
@@ -997,6 +1106,33 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
         $this->filesystem->dumpFile($filename, 'bar');
 
         $this->assertFileExists($filename);
+        $this->assertSame('bar', file_get_contents($filename));
+    }
+
+    public function testDumpFileWithFileScheme()
+    {
+        if (defined('HHVM_VERSION')) {
+            $this->markTestSkipped('HHVM does not handle the file:// scheme correctly');
+        }
+
+        $scheme = 'file://';
+        $filename = $scheme.$this->workspace.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'baz.txt';
+
+        $this->filesystem->dumpFile($filename, 'bar', null);
+
+        $this->assertFileExists($filename);
+        $this->assertSame('bar', file_get_contents($filename));
+    }
+
+    public function testDumpFileWithZlibScheme()
+    {
+        $scheme = 'compress.zlib://';
+        $filename = $this->workspace.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'baz.txt';
+
+        $this->filesystem->dumpFile($filename, 'bar', null);
+
+        // Zlib stat uses file:// wrapper so remove scheme
+        $this->assertFileExists(str_replace($scheme, '', $filename));
         $this->assertSame('bar', file_get_contents($filename));
     }
 

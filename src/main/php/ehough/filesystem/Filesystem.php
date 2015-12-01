@@ -567,13 +567,64 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
 
             $value = getenv($key);
 
-            if (! empty($value)) {
+            if (!empty($value)) {
 
                 return realpath($value);
             }
         }
 
         return null;
+    }
+
+     /* Creates a temporary file with support for custom stream wrappers.
+     *
+     * @param string $dir    The directory where the temporary filename will be created.
+     * @param string $prefix The prefix of the generated temporary filename.
+     *                       Note: Windows uses only the first three characters of prefix.
+     *
+     * @return string The new temporary filename (with path), or throw an exception on failure.
+     */
+    public function tempnam($dir, $prefix)
+    {
+        list($scheme, $hierarchy) = $this->getSchemeAndHierarchy($dir);
+
+        // If no scheme or scheme is "file" create temp file in local filesystem
+        if (null === $scheme || 'file' === $scheme) {
+            $tmpFile = tempnam($hierarchy, $prefix);
+
+            // If tempnam failed or no scheme return the filename otherwise prepend the scheme
+            if (false !== $tmpFile) {
+                if (null !== $scheme) {
+                    return $scheme.'://'.$tmpFile;
+                }
+
+                return $tmpFile;
+            }
+
+            throw new ehough_filesystem_exception_IOException('A temporary file could not be created.');
+        }
+
+        // Loop until we create a valid temp file or have reached 10 attempts
+        for ($i = 0; $i < 10; ++$i) {
+            // Create a unique filename
+            $tmpFile = $dir.'/'.$prefix.uniqid(mt_rand(), true);
+
+            // Use fopen instead of file_exists as some streams do not support stat
+            // Use mode 'x+' to atomically check existence and create to avoid a TOCTOU vulnerability
+            $handle = @fopen($tmpFile, 'x+');
+
+            // If unsuccessful restart the loop
+            if (false === $handle) {
+                continue;
+            }
+
+            // Close the file if it was successfully opened
+            @fclose($handle);
+
+            return $tmpFile;
+        }
+
+        throw new ehough_filesystem_exception_IOException('A temporary file could not be created.');
     }
 
     /**
@@ -596,7 +647,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
             throw new ehough_filesystem_exception_IOException(sprintf('Unable to write to the "%s" directory.', $dir), 0, null, $dir);
         }
 
-        $tmpFile = tempnam($dir, basename($filename));
+        $tmpFile = $this->tempnam($dir, basename($filename));
 
         if (false === @file_put_contents($tmpFile, $content)) {
             throw new ehough_filesystem_exception_IOException(sprintf('Failed to write file "%s".', $filename), 0, null, $filename);
@@ -624,5 +675,19 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         }
 
         return $files;
+    }
+
+    /**
+     * Gets a 2-tuple of scheme (may be null) and hierarchical part of a filename (e.g. file:///tmp -> array(file, tmp)).
+     *
+     * @param string $filename The filename to be parsed.
+     *
+     * @return array The filename scheme and hierarchical part
+     */
+    private function getSchemeAndHierarchy($filename)
+    {
+        $components = explode('://', $filename, 2);
+
+        return 2 === count($components) ? array($components[0], $components[1]) : array(null, $components[0]);
     }
 }
