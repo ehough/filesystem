@@ -17,7 +17,7 @@ require_once 'FilesystemTestCase.php';
 class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestCase
 {
     /**
-     * @var ehough_filesystem_Filesystem $filesystem
+     * @var ehough_filesystem_Filesystem
      */
     private $filesystem = null;
 
@@ -957,6 +957,19 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
     {
         $filename = $this->workspace.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'baz.txt';
 
+        $this->filesystem->dumpFile($filename, 'bar');
+
+        $this->assertFileExists($filename);
+        $this->assertSame('bar', file_get_contents($filename));
+    }
+
+    /**
+     * @group legacy
+     */
+    public function testDumpFileAndSetPermissions()
+    {
+        $filename = $this->workspace.DIRECTORY_SEPARATOR.'foo'.DIRECTORY_SEPARATOR.'baz.txt';
+
         $this->filesystem->dumpFile($filename, 'bar', 0753);
 
         $this->assertFileExists($filename);
@@ -992,5 +1005,18 @@ class ehough_filesystem_FilesystemTest extends ehough_filesystem_FilesystemTestC
 
         $this->assertFileExists($filename);
         $this->assertSame('bar', file_get_contents($filename));
+    }
+
+    public function testCopyShouldKeepExecutionPermission()
+    {
+        $sourceFilePath = $this->workspace.DIRECTORY_SEPARATOR.'copy_source_file';
+        $targetFilePath = $this->workspace.DIRECTORY_SEPARATOR.'copy_target_file';
+
+        file_put_contents($sourceFilePath, 'SOURCE FILE');
+        chmod($sourceFilePath, 0745);
+
+        $this->filesystem->copy($sourceFilePath, $targetFilePath);
+
+        $this->assertFilePermissions(767, $targetFilePath);
     }
 }
