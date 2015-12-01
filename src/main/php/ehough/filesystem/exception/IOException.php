@@ -15,8 +15,6 @@
  * @author Romain Neutron <imprec@gmail.com>
  * @author Christian Gärtner <christiangaertner.film@googlemail.com>
  * @author Fabien Potencier <fabien@symfony.com>
- *
- * @api
  */
 class ehough_filesystem_exception_IOException extends RuntimeException implements ehough_filesystem_exception_IOExceptionInterface
 {
