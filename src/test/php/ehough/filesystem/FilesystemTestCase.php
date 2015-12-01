@@ -14,7 +14,7 @@ class ehough_filesystem_FilesystemTestCase extends PHPUnit_Framework_TestCase
     private $umask;
 
     /**
-     * @var string $workspace
+     * @var string
      */
     protected $workspace = null;
 
@@ -38,7 +38,7 @@ class ehough_filesystem_FilesystemTestCase extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->umask = umask(0);
-        $this->workspace = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.time().rand(0, 1000);
+        $this->workspace = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.time().mt_rand(0, 1000);
         mkdir($this->workspace, 0777, true);
         $this->workspace = realpath($this->workspace);
     }

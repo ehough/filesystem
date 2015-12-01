@@ -287,7 +287,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
 
             }
             if (is_link($file) && function_exists('lchgrp')) {
-                if (true !== @lchgrp($file, $group)) {
+                if (true !== @lchgrp($file, $group) || (defined('HHVM_VERSION') && !posix_getgrnam($group))) {
                     throw new ehough_filesystem_exception_IOException(sprintf('Failed to chgrp file "%s".', $file), 0, null, $file);
                 }
             } else {
