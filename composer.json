@@ -3,12 +3,21 @@
     "type": "library",
     "description": "Fork of Symfony's Filesystem Component compatible with PHP 5.2+",
     "keywords": ["filesystem"],
+    "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
         {
             "name": "Eric Hough",
             "email": "eric@tubepress.com",
             "homepage": "https://github.com/ehough"
+        },
+        {
+            "name": "Fabien Potencier",
+            "email": "fabien@symfony.com"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
         }
     ],
     "require": {
