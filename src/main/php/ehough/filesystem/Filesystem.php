@@ -61,16 +61,26 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
 
         if ($doCopy) {
             // https://bugs.php.net/bug.php?id=64634
-            $source = fopen($originFile, 'r');
+            if (false === $source = @fopen($originFile, 'r')) {
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy "%s" to "%s" because source file could not be opened for reading.', $originFile, $targetFile), 0, null, $originFile);
+            }
+
             // Stream context created to allow files overwrite when using FTP stream wrapper - disabled by default
-            $target = fopen($targetFile, 'w', null, stream_context_create(array('ftp' => array('overwrite' => true))));
-            stream_copy_to_stream($source, $target);
+            if (false === $target = @fopen($targetFile, 'w', null, stream_context_create(array('ftp' => array('overwrite' => true))))) {
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy "%s" to "%s" because target file could not be opened for writing.', $originFile, $targetFile), 0, null, $originFile);
+            }
+
+            $bytesCopied = stream_copy_to_stream($source, $target);
             fclose($source);
             fclose($target);
             unset($source, $target);
 
             if (!is_file($targetFile)) {
                 throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy "%s" to "%s".', $originFile, $targetFile), 0, null, $originFile);
+            }
+
+            if (stream_is_local($originFile) && $bytesCopied !== filesize($originFile)) {
+                throw new ehough_filesystem_exception_IOException(sprintf('Failed to copy the whole content of "%s" to "%s %g bytes copied".', $originFile, $targetFile, $bytesCopied), 0, null, $originFile);
             }
         }
     }
@@ -319,9 +329,10 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
      */
     public function symlink($originDir, $targetDir, $copyOnWindows = false)
     {
-        if (!function_exists('symlink') && $copyOnWindows) {
-            $this->mirror($originDir, $targetDir);
+        $onWindows = strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN';
 
+        if ($onWindows && $copyOnWindows) {
+            $this->mirror($originDir, $targetDir);
             return;
         }
 
@@ -344,8 +355,11 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
                         throw new ehough_filesystem_exception_IOException('Unable to create symlink due to error code 1314: \'A required privilege is not held by the client\'. Do you have the required Administrator-rights?');
                     }
                 }
-
                 throw new ehough_filesystem_exception_IOException(sprintf('Failed to create symbolic link from "%s" to "%s".', $originDir, $targetDir), 0, null, $targetDir);
+            }
+
+            if (!file_exists($targetDir)) {
+                throw new ehough_filesystem_exception_IOException(sprintf('Symbolic link "%s" is created but appears to be broken.', $targetDir), 0, null, $targetDir);
             }
         }
     }
@@ -434,7 +448,7 @@ class ehough_filesystem_Filesystem implements ehough_filesystem_FilesystemInterf
         }
 
         $copyOnWindows = false;
-        if (isset($options['copy_on_windows']) && !function_exists('symlink')) {
+        if (isset($options['copy_on_windows'])) {
             $copyOnWindows = $options['copy_on_windows'];
         }
 
