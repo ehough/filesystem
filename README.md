@@ -13,7 +13,7 @@ Fork of [Symfony's Filesystem component](https://github.com/symfony/Filesystem) 
 but it's only compatible with PHP 5.3+. While 99% of PHP servers run PHP 5.2 or higher,
 13% of all servers are still running PHP 5.2 or lower ([source](http://w3techs.com/technologies/details/pl-php/5/all)).
 
-**Once PHP 5.3+ adoption levels break 90%, this library will be retired.**
+**Version 2.8.0 will likely be the last release of this library** since PHP 5.2 levels are finally falling below 10%.
 
 ### Differences from [Symfony's Filesystem component](https://github.com/symfony/EventDispatcher)
 
